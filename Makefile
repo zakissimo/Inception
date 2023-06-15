@@ -16,6 +16,6 @@ ifeq ($(VAR), )
 endif
 
 clean: down
-	@rm -rf /home/zhabri/data
+	@sudo rm -rf /home/zhabri/data
 
 .PHONY: all up clean test

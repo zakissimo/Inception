@@ -1,3 +1,10 @@
+volumes:
+    data:
+        name: data
+        driver_opts:
+            device: /home/zhabri/data
+            type: bind
+
 networks:
     inception:
         name: inception
@@ -6,6 +13,8 @@ services:
     nginx:
         container_name: nginx
         build: ./srcs/nginx
+        volumes:
+            - data:/var/www/html
         networks:
             - inception
         ports:
