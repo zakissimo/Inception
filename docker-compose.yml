@@ -1,0 +1,13 @@
+networks:
+    inception:
+        name: inception
+
+services:
+    nginx:
+        container_name: nginx
+        build: ./srcs/nginx
+        networks:
+            - inception
+        ports:
+            - "443:443"
+        restart: always
