@@ -1,8 +1,15 @@
+version: '3'
+
 volumes:
-    data:
-        name: data
+    db:
+        name: db
         driver_opts:
-            device: /home/zhabri/data
+            device: /home/zhabri/data/db
+            type: bind
+    web:
+        name: web
+        driver_opts:
+            device: /home/zhabri/data/web
             type: bind
 
 networks:
@@ -12,11 +19,21 @@ networks:
 services:
     nginx:
         container_name: nginx
-        build: ./srcs/nginx
+        build: ./srcs/nginx/
         volumes:
-            - data:/var/www/html
+            - db:/var/www/html/
         networks:
             - inception
         ports:
             - "443:443"
+        restart: always
+    wordpress:
+        container_name: wordpress
+        build: ./srcs/wordpress/
+        volumes:
+            - db:/var/www/html/
+        networks:
+            - inception
+        env_file:
+            - .env
         restart: always

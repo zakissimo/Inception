@@ -1,7 +1,6 @@
 #!/bin/sh
 
 mkdir -p /var/www/html && cd /var/www/html
-rm -rf /var/www/html/*
 
 wp core download --allow-root
 

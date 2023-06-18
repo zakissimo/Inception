@@ -1,7 +1,8 @@
 all: up
 
 up:
-	@mkdir -p /home/zhabri/data
+	@mkdir -p /home/zhabri/data/db
+	@mkdir -p /home/zhabri/data/web
 	docker compose up -d
 
 down:
