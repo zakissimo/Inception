@@ -1,16 +1,19 @@
-version: '3.9'
+version: '3'
 
 volumes:
     db:
         name: db
+        driver: local
         driver_opts:
             device: /home/zhabri/data/db
-            type: bind
+            o: bind
+            type: none
     web:
         name: web
         driver_opts:
             device: /home/zhabri/data/web
-            type: bind
+            o: bind
+            type: none
 
 networks:
     inception:
@@ -19,9 +22,9 @@ networks:
 services:
     nginx:
         container_name: nginx
-        build: ./requirements/nginx/
+        build: ./requirements/nginx
         volumes:
-            - db:/var/www/html/
+            - db:/var/www/html
         networks:
             - inception
         ports:
@@ -31,23 +34,23 @@ services:
         restart: always
     wordpress:
         container_name: wordpress
-        build: ./requirements/wordpress/
+        build: ./requirements/wordpress
         volumes:
-            - db:/var/www/html/
+            - db:/var/www/html
         networks:
             - inception
         env_file:
             - .env
-        depends_on:
-            - mariadb
         restart: always
-    mariadb:
-        container_name: mariadb
-        build: ./requirements/mariadb
-        volumes:
-            - db:/var/lib/mysql
-        networks:
-            - inception
-        env_file: 
-            - .env
-        restart: always
+        # depends_on:
+        #     - mariadb
+    # mariadb:
+    #     container_name: mariadb
+    #     build: ./requirements/mariadb
+    #     volumes:
+    #         - db:/var/lib/mysql
+    #     networks:
+    #         - inception
+    #     env_file:
+    #         - .env
+    #     restart: always
