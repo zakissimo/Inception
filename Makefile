@@ -3,13 +3,13 @@ all: up
 up:
 	@mkdir -p /home/zhabri/data/db
 	@mkdir -p /home/zhabri/data/web
-	docker compose up -d
+	docker compose -f ./srcs/docker-compose.yml up -d
 
 down:
-	@docker compose down
+	@docker compose -f ./srcs/docker-compose.yml down
 
 stop:
-	docker compose stop
+	docker compose -f ./srcs/docker-compose.yml stop
 
 test:
 ifeq ($(VAR), )
