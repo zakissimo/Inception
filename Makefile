@@ -11,11 +11,6 @@ down:
 stop:
 	docker compose -f ./srcs/docker-compose.yml stop
 
-test:
-ifeq ($(VAR), )
-	@echo "EMPTY"
-endif
-
 clean: down
 	@sudo rm -rf /home/zhabri/data
 
