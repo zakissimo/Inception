@@ -23,8 +23,6 @@ RUN : \
         -subj "/C=FR/L=ANG/O=42/OU=stud/CN=zhabri" \
     && :
 
-RUN mkdir -p /run/nginx
-
 COPY ./nginx.conf /etc/nginx/conf.d/default.conf
 
 CMD ["nginx", "-g", "daemon off;"]

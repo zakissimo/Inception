@@ -19,7 +19,7 @@ RUN : \
     && chmod +x /usr/local/bin/wp-setup \
     && :
 
-WORKDIR /var/www/html/wordpress
+WORKDIR /var/www/html/
 
 ENTRYPOINT [ "wp-setup" ]
 

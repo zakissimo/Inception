@@ -1,21 +1,5 @@
 version: '3'
 
-volumes:
-    db:
-        name: db
-        driver: local
-        driver_opts:
-            device: /home/${USER}/data/db
-            type: none
-            o: bind
-    web:
-        name: web
-        driver: local
-        driver_opts:
-            device: /home/${USER}/data/web
-            type: none
-            o: bind
-
 networks:
     inception:
         name: inception
@@ -25,19 +9,19 @@ services:
         container_name: nginx
         build: ./requirements/nginx
         volumes:
-            - web:/var/www/html
+            - ~/data/web:/var/www/html
         networks:
             - inception
         ports:
             - 443:443
+        restart: always
         depends_on:
             - wordpress
-        restart: always
     wordpress:
         container_name: wordpress
         build: ./requirements/wordpress
         volumes:
-            - web:/var/www/html
+            - ~/data/web:/var/www/html
         networks:
             - inception
         env_file:
@@ -49,7 +33,7 @@ services:
         container_name: mariadb
         build: ./requirements/mariadb
         volumes:
-            - db:/var/lib/mysql
+            - ~/data/db:/var/lib/mysql
         networks:
             - inception
         env_file:
