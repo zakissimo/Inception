@@ -3,17 +3,14 @@ version: '3'
 volumes:
     db:
         name: db
-        driver: local
         driver_opts:
             device: /home/zhabri/data/db
-            o: bind
-            type: none
+            type: bind
     web:
         name: web
         driver_opts:
             device: /home/zhabri/data/web
-            o: bind
-            type: none
+            type: bind
 
 networks:
     inception:
@@ -42,15 +39,15 @@ services:
         env_file:
             - .env
         restart: always
-        # depends_on:
-        #     - mariadb
-    # mariadb:
-    #     container_name: mariadb
-    #     build: ./requirements/mariadb
-    #     volumes:
-    #         - db:/var/lib/mysql
-    #     networks:
-    #         - inception
-    #     env_file:
-    #         - .env
-    #     restart: always
+        depends_on:
+            - mariadb
+    mariadb:
+        container_name: mariadb
+        build: ./requirements/mariadb
+        volumes:
+            - db:/var/lib/mysql
+        networks:
+            - inception
+        env_file:
+            - .env
+        restart: always

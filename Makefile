@@ -13,5 +13,6 @@ stop:
 
 clean: down
 	@sudo rm -rf /home/zhabri/data
+	docker rmi -f $(shell docker images -a -q)
 
 .PHONY: all up clean test

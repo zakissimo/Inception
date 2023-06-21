@@ -10,10 +10,11 @@ RUN : \
     && chmod 777 /var/run/mysqld \
     && :
 
-COPY ./docker-entrypoint.sh /usr/local/bin/docker-entrypoint
+COPY ./mariadb-setup.sh /usr/local/bin/mariadb-setup
 
-RUN chmod +x /usr/local/bin/docker-entrypoint
-
-ENTRYPOINT ["docker-entrypoint"]
+RUN : \
+    && chmod +x /usr/local/bin/mariadb-setup \
+    && mariadb-setup \
+    && :
 
 CMD ["mysqld"]
