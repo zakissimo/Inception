@@ -1,34 +1,40 @@
 #!/bin/sh
 
-set -x
+if [ ! -d "/run/mysqld" ]; then
+    mkdir -p /run/mysqld
+    chown -R mysql:mysql /run/mysqld
+fi
 
-cat << EOF > /etc/my.cnf
-[mysqld]
-user = root
-port = 3306
-datadir = /var/lib/mysql
-socket = /var/run/mysqld/mysqld.sock
-skip-networking = false
-bind-address = 0.0.0.0
-EOF
+if [ ! -d "/var/lib/mysql/mysql" ]; then
+    chown -R mysql:mysql /var/lib/mysql
 
-echo $DB_NAME
-echo $DB_USER
-echo $DB_PWD
+    mysql_install_db --basedir=/usr --datadir=/var/lib/mysql --user=mysql --rpm > /dev/null
 
-cp /etc/my.cnf /etc/mysql/my.cnf
-cp /etc/my.cnf ~/my.cnf
+    tfile=$(mktemp)
+    if [ ! -f "$tfile" ]; then
+        return 1
+    fi
 
-mysql_install_db
-mysqld --user=root --datadir=/var/lib/mysql &
+    cat << EOF > "$tfile"
+USE mysql;
+FLUSH PRIVILEGES;
 
-sleep 5
+DELETE FROM mysql.user WHERE User='';
+DROP DATABASE test;
+DELETE FROM mysql.db WHERE Db='test';
+DELETE FROM mysql.user WHERE User='root' AND Host NOT IN ('localhost', '127.0.0.1', '::1');
 
-mysql -u root <<EOF
-CREATE DATABASE IF NOT EXISTS $DB_NAME;
-CREATE USER IF NOT EXISTS '$DB_USER'@'localhost' IDENTIFIED BY '$DB_PWD';
-GRANT ALL PRIVILEGES ON $DB_NAME.* TO '$DB_USER'@'localhost';
+ALTER USER 'root'@'localhost' IDENTIFIED BY '$DB_PWD';
+
+CREATE DATABASE $DB_NAME CHARACTER SET utf8 COLLATE utf8_general_ci;
+CREATE USER '$DB_USER'@'%' IDENTIFIED by '$DB_PWD';
+GRANT ALL PRIVILEGES ON $DB_NAME.* TO '$DB_USER'@'%';
+
 FLUSH PRIVILEGES;
 EOF
+    /usr/bin/mysqld --user=mysql --bootstrap < "$tfile"
+    rm -f "$tfile"
+fi
 
-pkill mysqld
+sed -i "s|skip-networking|# skip-networking|g" /etc/my.cnf.d/mariadb-server.cnf
+sed -i "s|.*bind-address\s*=.*|bind-address=0.0.0.0|g" /etc/my.cnf.d/mariadb-server.cnf

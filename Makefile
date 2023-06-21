@@ -1,8 +1,9 @@
 all: up
 
 up:
-	@mkdir -p /home/zhabri/data/db
-	@mkdir -p /home/zhabri/data/web
+	@mkdir -p /home/$(USER)/data/db
+	@mkdir -p /home/$(USER)/data/web
+	docker compose -f ./srcs/docker-compose.yml build --no-cache
 	docker compose -f ./srcs/docker-compose.yml up -d
 
 down:
@@ -12,7 +13,7 @@ stop:
 	docker compose -f ./srcs/docker-compose.yml stop
 
 clean: down
-	@sudo rm -rf /home/zhabri/data
+	@sudo rm -rf /home/$(USER)/data
 	docker rmi -f $(shell docker images -a -q)
 
 .PHONY: all up clean test

@@ -3,14 +3,18 @@ version: '3'
 volumes:
     db:
         name: db
+        driver: local
         driver_opts:
-            device: /home/zhabri/data/db
-            type: bind
+            device: /home/${USER}/data/db
+            type: none
+            o: bind
     web:
         name: web
+        driver: local
         driver_opts:
-            device: /home/zhabri/data/web
-            type: bind
+            device: /home/${USER}/data/web
+            type: none
+            o: bind
 
 networks:
     inception:
@@ -21,11 +25,11 @@ services:
         container_name: nginx
         build: ./requirements/nginx
         volumes:
-            - db:/var/www/html
+            - web:/var/www/html
         networks:
             - inception
         ports:
-            - "443:443"
+            - 443:443
         depends_on:
             - wordpress
         restart: always
@@ -33,14 +37,14 @@ services:
         container_name: wordpress
         build: ./requirements/wordpress
         volumes:
-            - db:/var/www/html
+            - web:/var/www/html
         networks:
             - inception
         env_file:
             - .env
-        restart: always
         depends_on:
             - mariadb
+        restart: always
     mariadb:
         container_name: mariadb
         build: ./requirements/mariadb
