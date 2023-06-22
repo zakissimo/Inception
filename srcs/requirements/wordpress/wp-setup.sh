@@ -8,6 +8,12 @@ if [ ! -f "/var/www/html/index.html" ]; then
 
     mv /tmp/index.html /var/www/html/index.html
 
+    touch /var/kek.txt
+    touch /var/www/kek.txt
+    touch /var/www/html/kek.txt
+
+    cd /var/www/html
+
     wp core download --allow-root
 
     wp config create --dbname=$DB_NAME --dbuser=$DB_USER --dbpass=$DB_PWD --dbhost=$DB_HOST --dbcharset="utf8" --dbcollate="utf8_general_ci" --allow-root
