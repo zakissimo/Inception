@@ -1,9 +1,11 @@
 all: up
 
-up:
+build:
 	@mkdir -p /home/$(USER)/data/db
 	@mkdir -p /home/$(USER)/data/web
-	docker compose -f ./srcs/docker-compose.yml build --no-cache
+	@docker compose -f ./srcs/docker-compose.yml build --no-cache
+
+up: build
 	docker compose -f ./srcs/docker-compose.yml up -d
 
 down:
@@ -16,4 +18,4 @@ clean: down
 	@sudo rm -rf /home/$(USER)/data
 	docker rmi -f $(shell docker images -a -q)
 
-.PHONY: all up clean test
+.PHONY: all up clean test build
