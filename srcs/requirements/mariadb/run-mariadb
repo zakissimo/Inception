@@ -1,0 +1,34 @@
+#!/bin/sh
+
+MYSQL_DATABASE=zakdb
+MYSQL_USER=zak
+MYSQL_ROOT_PASSWORD=zak
+MYSQL_PASSWORD=zak
+
+install_db () {
+    mysql_install_db --user=mysql --datadir=/var/lib/mysql --skip-test-db
+
+    #https://github.com/yobasystems/alpine-mariadb
+    /usr/bin/mysqld \
+        --user=mysql \
+        --bootstrap \
+        --verbose=0 \
+        --skip-name-resolve \
+        --skip-networking <<-EOF
+        USE mysql;
+        FLUSH PRIVILEGES ;
+        GRANT ALL ON *.* TO 'root'@'%' identified by '$MYSQL_ROOT_PASSWORD' WITH GRANT OPTION ;
+        SET PASSWORD FOR 'root'@'localhost'=PASSWORD('${MYSQL_ROOT_PASSWORD}') ;
+        CREATE DATABASE IF NOT EXISTS $MYSQL_DATABASE CHARACTER SET utf8 COLLATE utf8_general_ci;
+        GRANT ALL ON $MYSQL_DATABASE.* to '$MYSQL_USER'@'%' IDENTIFIED BY '$MYSQL_PASSWORD';
+        FLUSH PRIVILEGES ;
+EOF
+
+    #https://wiki.alpinelinux.org/wiki/MariaDB
+    sed -i "s|.*bind-address\s*=.*|bind-address=0.0.0.0|g" /etc/mysql/my.cnf
+    sed -i "s|.*bind-address\s*=.*|bind-address=0.0.0.0|g" /etc/my.cnf.d/mariadb-server.cnf
+}
+
+[ ! -d /var/lib/mysql/mysql ] && install_db
+
+exec /usr/bin/mysqld --user=mysql --console --skip-name-resolve --skip-networking
