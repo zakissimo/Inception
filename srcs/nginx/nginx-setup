@@ -1,0 +1,49 @@
+#!/bin/sh
+
+DOMAIN=zhabri.42.fr
+SSLKEY=/etc/ssl/private/nginx.key
+SSLCERT=/etc/ssl/certs/nginx.crt
+
+gen_ssl_key() {
+    openssl req -newkey rsa:2048 \
+    -nodes -keyout $SSLKEY \
+    -x509 -days 365 -out $SSLCERT \
+    -subj "/CN=$DOMAIN"
+
+    chmod 600 /etc/ssl/private/nginx.key
+}
+
+gen_nginx_conf() {
+    [ -f /etc/nginx/http.d/default.conf ] && rm /etc/nginx/http.d/default.conf
+    cat <<- EOF > /etc/nginx/http.d/my.conf
+        server {
+            listen 443 ssl;
+            server_name $DOMAIN;
+
+            ssl_protocols TLSv1.2 TLSv1.3;
+            ssl_certificate $SSLCERT;
+            ssl_certificate_key $SSLKEY;
+
+            root /var/www/html;
+            index index.php index.html index.htm;
+
+            location / {
+                try_files \$uri \$uri/ /index.php?\$args;
+            }
+
+            #location ~ \.php\$ {
+            #    fastcgi_pass   localhost:9000;
+            #    fastcgi_index  index.php;
+            #    fastcgi_param  SCRIPT_FILENAME  \$document_root\$fastcgi_script_name;
+            #    include        fastcgi_params;
+            #}
+        }
+EOF
+}
+
+[ ! -d /var/www/html ] && mkdir -p /var/www/html
+[ ! -f /var/www/html/index.html ] && echo "Yo from nginx!" > /var/www/html/index.html
+[ ! -f /etc/ssl/private/nginx.key ] && gen_ssl_key
+[ ! -f /etc/nginx/http.d/my.conf ] && gen_nginx_conf
+
+nginx -g "daemon off;"
