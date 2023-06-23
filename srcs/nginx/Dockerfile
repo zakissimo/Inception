@@ -1,12 +1,13 @@
 FROM alpine:3.17
 
-COPY ./nginx-setup /usr/local/bin/nginx-setup
+COPY ./run-nginx /usr/local/bin/run-nginx
 
 RUN : \
     && apk update \
     && apk upgrade \
-    && apk add openssl curl nginx --no-cache \
-    && chmod +x /usr/local/bin/nginx-setup \
+    && apk add --no-cache openssl curl nginx \
+    && rm -rf /var/cache/apk/* \
+    && chmod +x /usr/local/bin/run-nginx \
     && :
 
-ENTRYPOINT ["nginx-setup"]
+ENTRYPOINT ["run-nginx"]

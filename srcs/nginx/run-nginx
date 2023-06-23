@@ -18,17 +18,18 @@ gen_nginx_conf() {
     cat <<- EOF > /etc/nginx/http.d/my.conf
         server {
             listen 443 ssl;
-            server_name $DOMAIN;
+            listen [::]:443 ssl;
+
+            server_name $DOMAIN www.$DOMAIN;
 
             ssl_protocols TLSv1.2 TLSv1.3;
             ssl_certificate $SSLCERT;
             ssl_certificate_key $SSLKEY;
 
             root /var/www/html;
-            index index.php index.html index.htm;
 
             location / {
-                try_files \$uri \$uri/ /index.php?\$args;
+                index index.html index.php;
             }
 
             #location ~ \.php\$ {
@@ -46,4 +47,4 @@ EOF
 [ ! -f /etc/ssl/private/nginx.key ] && gen_ssl_key
 [ ! -f /etc/nginx/http.d/my.conf ] && gen_nginx_conf
 
-nginx -g "daemon off;"
+exec nginx -g "daemon off;"
