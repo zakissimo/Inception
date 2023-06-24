@@ -1,0 +1,13 @@
+#!/bin/sh
+
+DATABASE=zakdb
+DBHOST=mariadb
+USER=zak
+PASSWORD=zak
+
+set_wp () {
+    wp core download --skip-content
+    wp config create --dbname=$DATABASE --dbuser=$USER --dbpass=$PASSWORD -dbhost=$DBHOST
+}
+
+[ ! -f /var/www/wordpress/wp-config.php ] && set_wp

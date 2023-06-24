@@ -4,7 +4,6 @@ COPY ./run-mariadb /usr/local/bin/run-mariadb
 
 RUN : \
     && apk update \
-    && apk upgrade \
     && apk add --no-cache mariadb mariadb-client mariadb-server-utils \
     && rm -rf /var/cache/apk/* \
     && mkdir -p /run/mysqld \
