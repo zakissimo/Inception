@@ -5,7 +5,8 @@ DBHOST=mariadb
 USER=zak
 PASSWORD=zak
 PHP_FPM="$(find /usr -name 'php-fpm*' -executable -type f)"
-PHP_FPM_CONF="$(find /etc -type d -name 'php-fpm.d')/www.conf"
+PHP_CONF_LOC="$(find /etc -type d -name 'php-fpm.d')"
+PHP_FPM_CONF="$PHP_CONF_LOC"/my.conf
 
 # https://make.wordpress.org/cli/handbook/guides/installing/
 install_wp_cli () {
@@ -18,40 +19,28 @@ install_wp_cli () {
 install_wp () {
     wp core download --skip-content
     wp config create --dbname=$DATABASE --dbuser=$USER --dbpass=$PASSWORD --dbhost=$DBHOST
+    chown -R nginx:nginx /var/www/wordpress
 }
 
 set_php_fpm () {
+    rm "$PHP_CONF_LOC"/www.conf
     cat << EOF > "$PHP_FPM_CONF"
-[www]
-user = $USER
-group = $USER
+[inception]
+user = nginx
+group = nginx
 
-listen = 0.0.0.0:9000
+listen = 9000
 
 pm = dynamic
 pm.max_children = 10
 pm.start_servers = 3
 pm.min_spare_servers = 2
 pm.max_spare_servers = 5
-
-catch_workers_output = yes
-
-php_flag[display_errors] = on
-php_admin_value[error_log] = /var/log/fpm-php.log
-php_admin_flag[log_errors] = on
 EOF
-}
-
-# https://github.com/rlerdorf/php7dev/issues/48
-set_log () {
-    mkdir -p /var/log/
-    touch /var/log/fpm-php.log
-    chmod 666 /var/log/fpm-php.log
 }
 
 [ ! -f /usr/local/bin/wp ] && install_wp_cli
 [ ! -f /var/www/wordpress/wp-config.php ] && install_wp
 [ ! -f "$PHP_FPM_CONF" ] && set_php_fpm
-[ ! -f /var/log/fpm-php.log ] && set_log
 
-exec "$PHP_FPM" -F -R
+exec "$PHP_FPM" -F -O -R

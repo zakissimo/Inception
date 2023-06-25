@@ -6,10 +6,10 @@ RUN : \
     && apk update \
     && apk add --no-cache curl php-curl php-fpm php-mbstring php-mysqli php-phar php-zip mariadb-client \
     && rm -rf /var/cache/apk/* \
+    && adduser -S nginx \
+    && addgroup -S nginx \
     && mkdir -p /var/www/wordpress \
     && chmod +x /usr/local/bin/run-wp \
-    && adduser -S zak \
-    && addgroup -S zak \
     && :
 
 WORKDIR /var/www/wordpress

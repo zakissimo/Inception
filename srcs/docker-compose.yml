@@ -9,7 +9,7 @@ services:
         container_name: nginx
         build: ./requirements/nginx
         volumes:
-            - ~/data/web:/var/www/html
+            - ~/data/web:/var/www/wordpress
         networks:
             - inception
         ports:
