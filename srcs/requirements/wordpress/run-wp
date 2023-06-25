@@ -4,10 +4,32 @@ DATABASE=zakdb
 DBHOST=mariadb
 USER=zak
 PASSWORD=zak
+PHP_FPM="$(find /etc -type d -name 'php-fpm.d')/my.conf"
 
-set_wp () {
+# https://make.wordpress.org/cli/handbook/guides/installing/
+install_wp_cli () {
+    curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
+    chmod +x wp-cli.phar
+    mv wp-cli.phar /usr/local/bin/wp
+}
+
+# https://make.wordpress.org/cli/handbook/guides/quick-start/
+install_wp () {
     wp core download --skip-content
     wp config create --dbname=$DATABASE --dbuser=$USER --dbpass=$PASSWORD --dbhost=$DBHOST
 }
 
-[ ! -f /var/www/wordpress/wp-config.php ] && set_wp
+set_php_fpm () {
+    cat <<- EOF > "$PHP_FPM"
+    [Inception]
+    user = nginx
+    group = nginx
+    listen = 9000
+EOF
+}
+
+[ ! -f /usr/local/bin/wp ] && install_wp_cli
+[ ! -f /var/www/wordpress/wp-config.php ] && install_wp
+[ ! -f "$PHP_FPM" ] && set_php_fpm
+
+exec php-fpm -F -R

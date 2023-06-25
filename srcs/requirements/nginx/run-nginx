@@ -27,23 +27,25 @@ gen_nginx_conf() {
             ssl_certificate_key $SSLKEY;
 
             root /var/www/html;
+            index index.php index.html;
 
             location / {
-                index index.html index.php;
+                autoindex on;
+                try_files \$uri \$uri/ =404;
             }
 
-            #location ~ \.php\$ {
-            #    fastcgi_pass   localhost:9000;
-            #    fastcgi_index  index.php;
-            #    fastcgi_param  SCRIPT_FILENAME  \$document_root\$fastcgi_script_name;
-            #    include        fastcgi_params;
-            #}
+            location ~ \.php\$ {
+                include fastcgi_params;
+                fastcgi_pass wordpress:9000;
+                fastcgi_param SCRIPT_FILENAME \$document_root\$fastcgi_script_name;
+                fastcgi_param PATH_INFO \$fastcgi_path_info;
+            }
         }
 EOF
 }
 
 [ ! -d /var/www/html ] && mkdir -p /var/www/html
-[ ! -f /var/www/html/index.html ] && echo "Yo from nginx!" > /var/www/html/index.html
+# [ ! -f /var/www/html/index.html ] && echo "Yo from nginx!" > /var/www/html/index.html
 [ ! -f /etc/ssl/private/nginx.key ] && gen_ssl_key
 [ ! -f /etc/nginx/http.d/my.conf ] && gen_nginx_conf
 

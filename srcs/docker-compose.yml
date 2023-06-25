@@ -21,11 +21,11 @@ services:
         container_name: wordpress
         build: ./requirements/wordpress
         volumes:
-            - ~/data/web:/var/www/html
+            - ~/data/web:/var/www/wordpress
         networks:
             - inception
-        env_file:
-            - .env
+        # env_file:
+        #     - .env
         depends_on:
             - mariadb
         restart: always
@@ -36,6 +36,6 @@ services:
             - ~/data/db:/var/lib/mysql
         networks:
             - inception
-        env_file:
-            - .env
+        # env_file:
+        #     - .env
         restart: always
