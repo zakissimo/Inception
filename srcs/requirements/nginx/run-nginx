@@ -26,7 +26,7 @@ gen_nginx_conf() {
         ssl_certificate $SSLCERT;
         ssl_certificate_key $SSLKEY;
 
-        root /var/www/wordpress;
+        root /var/www/wp;
         index index.php index.html;
 
         location / {
@@ -43,8 +43,7 @@ gen_nginx_conf() {
 EOF
 }
 
-[ ! -d /var/www/wordpress ] && mkdir -p /var/www/wordpress
-# [ ! -f /var/www/html/index.html ] && echo "Yo from nginx!" > /var/www/html/index.html
+[ ! -d /var/www/wp ] && mkdir -p /var/www/wp
 [ ! -f /etc/ssl/private/nginx.key ] && gen_ssl_key
 [ ! -f /etc/nginx/http.d/my.conf ] && gen_nginx_conf
 

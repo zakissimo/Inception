@@ -15,7 +15,9 @@ stop:
 	docker compose -f ./srcs/docker-compose.yml stop
 
 clean: down
-	@sudo rm -rf /home/$(USER)/data
 	docker rmi -f $(shell docker images -a -q)
 
-.PHONY: all up clean test build
+fclean: clean
+	sudo rm -rvf /home/$(USER)/data
+
+.PHONY: all up clean fclean build

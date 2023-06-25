@@ -8,10 +8,10 @@ RUN : \
     && rm -rf /var/cache/apk/* \
     && adduser -S nginx \
     && addgroup -S nginx \
-    && mkdir -p /var/www/wordpress \
+    && mkdir -p /var/www/wp \
     && chmod +x /usr/local/bin/run-wp \
     && :
 
-WORKDIR /var/www/wordpress
+WORKDIR /var/www/wp
 
 ENTRYPOINT ["run-wp"]

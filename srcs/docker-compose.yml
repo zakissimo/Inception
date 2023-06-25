@@ -9,7 +9,7 @@ services:
         container_name: nginx
         build: ./requirements/nginx
         volumes:
-            - ~/data/web:/var/www/wordpress
+            - ~/data/web:/var/www/wp
         networks:
             - inception
         ports:
@@ -21,7 +21,7 @@ services:
         container_name: wordpress
         build: ./requirements/wordpress
         volumes:
-            - ~/data/web:/var/www/wordpress
+            - ~/data/web:/var/www/wp
         networks:
             - inception
         # env_file:

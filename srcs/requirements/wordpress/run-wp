@@ -19,7 +19,7 @@ install_wp_cli () {
 install_wp () {
     wp core download --skip-content
     wp config create --dbname=$DATABASE --dbuser=$USER --dbpass=$PASSWORD --dbhost=$DBHOST
-    chown -R nginx:nginx /var/www/wordpress
+    chown -R nginx:nginx /var/www/wp
 }
 
 set_php_fpm () {
@@ -43,4 +43,4 @@ EOF
 [ ! -f /var/www/wordpress/wp-config.php ] && install_wp
 [ ! -f "$PHP_FPM_CONF" ] && set_php_fpm
 
-exec "$PHP_FPM" -F -O -R
+exec "$PHP_FPM" -FOR
