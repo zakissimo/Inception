@@ -8,6 +8,8 @@ RUN : \
     && rm -rf /var/cache/apk/* \
     && mkdir -p /var/www/wordpress \
     && chmod +x /usr/local/bin/run-wp \
+    && adduser -S zak \
+    && addgroup -S zak \
     && :
 
 WORKDIR /var/www/wordpress

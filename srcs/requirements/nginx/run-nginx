@@ -15,32 +15,32 @@ gen_ssl_key() {
 
 gen_nginx_conf() {
     [ -f /etc/nginx/http.d/default.conf ] && rm /etc/nginx/http.d/default.conf
-    cat <<- EOF > /etc/nginx/http.d/my.conf
-        server {
-            listen 443 ssl;
-            listen [::]:443 ssl;
+    cat << EOF > /etc/nginx/http.d/my.conf
+    server {
+        listen 443 ssl;
+        listen [::]:443 ssl;
 
-            server_name $DOMAIN www.$DOMAIN;
+        server_name $DOMAIN www.$DOMAIN;
 
-            ssl_protocols TLSv1.2 TLSv1.3;
-            ssl_certificate $SSLCERT;
-            ssl_certificate_key $SSLKEY;
+        ssl_protocols TLSv1.2 TLSv1.3;
+        ssl_certificate $SSLCERT;
+        ssl_certificate_key $SSLKEY;
 
-            root /var/www/html;
-            index index.php index.html;
+        root /var/www/html;
+        index index.php index.html;
 
-            location / {
-                autoindex on;
-                try_files \$uri \$uri/ =404;
-            }
-
-            location ~ \.php\$ {
-                include fastcgi_params;
-                fastcgi_pass wordpress:9000;
-                fastcgi_param SCRIPT_FILENAME \$document_root\$fastcgi_script_name;
-                fastcgi_param PATH_INFO \$fastcgi_path_info;
-            }
+        location / {
+            autoindex on;
+            try_files \$uri \$uri/ =404;
         }
+
+        location ~ \.php\$ {
+            include fastcgi_params;
+            fastcgi_pass wordpress:9000;
+            fastcgi_param SCRIPT_FILENAME \$document_root\$fastcgi_script_name;
+            fastcgi_param PATH_INFO \$fastcgi_path_info;
+        }
+    }
 EOF
 }
 
