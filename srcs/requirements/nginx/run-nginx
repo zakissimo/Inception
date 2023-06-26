@@ -1,9 +1,5 @@
 #!/bin/sh
 
-DOMAIN=zhabri.42.fr
-SSLKEY=/etc/ssl/private/nginx.key
-SSLCERT=/etc/ssl/certs/nginx.crt
-
 gen_ssl_key() {
     openssl req -newkey rsa:2048 \
     -nodes -keyout $SSLKEY \

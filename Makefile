@@ -16,8 +16,6 @@ stop:
 
 clean: down
 	docker rmi -f $(shell docker images -a -q)
-
-fclean: clean
 	sudo rm -rvf /home/$(USER)/data
 
-.PHONY: all up clean fclean build
+.PHONY: all up clean build

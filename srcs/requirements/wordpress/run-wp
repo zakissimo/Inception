@@ -1,9 +1,5 @@
 #!/bin/sh
 
-DATABASE=zakdb
-DBHOST=mariadb
-USER=zak
-PASSWORD=zak
 PHP_FPM="$(find /usr -name 'php-fpm*' -executable -type f)"
 PHP_CONF_LOC="$(find /etc -type d -name 'php-fpm.d')"
 PHP_FPM_CONF="$PHP_CONF_LOC"/my.conf
@@ -17,30 +13,33 @@ install_wp_cli () {
 
 # https://make.wordpress.org/cli/handbook/guides/quick-start/
 install_wp () {
-    wp core download --skip-content
-    wp config create --dbname=$DATABASE --dbuser=$USER --dbpass=$PASSWORD --dbhost=$DBHOST
+    wp core download
+    wp config create --dbname="$DATABASE" --dbuser="$USER" --dbpass="$PASSWORD" --dbhost="$DBHOST"
+    wp core install --url="$DOMAIN" --title="Inception" --admin_user="$WP_ADMIN" --admin_password="$WP_ADMIN_PASSWD" --admin_email=zak@fake.com --skip-email
+    wp theme install mrwriter --activate
+
     chown -R nginx:nginx /var/www/wp
 }
 
 set_php_fpm () {
     rm "$PHP_CONF_LOC"/www.conf
-    cat << EOF > "$PHP_FPM_CONF"
-[inception]
-user = nginx
-group = nginx
+    cat <<- EOF > "$PHP_FPM_CONF"
+	[inception]
+	user = nginx
+	group = nginx
 
-listen = 9000
+	listen = 9000
 
-pm = dynamic
-pm.max_children = 10
-pm.start_servers = 3
-pm.min_spare_servers = 2
-pm.max_spare_servers = 5
+	pm = dynamic
+	pm.max_children = 10
+	pm.start_servers = 3
+	pm.min_spare_servers = 2
+	pm.max_spare_servers = 5
 EOF
 }
 
 [ ! -f /usr/local/bin/wp ] && install_wp_cli
-[ ! -f /var/www/wordpress/wp-config.php ] && install_wp
+[ ! -f /var/www/wp/wp-config.php ] && install_wp
 [ ! -f "$PHP_FPM_CONF" ] && set_php_fpm
 
 exec "$PHP_FPM" -FOR

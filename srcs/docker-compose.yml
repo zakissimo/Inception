@@ -14,9 +14,13 @@ services:
             - inception
         ports:
             - 443:443
-        restart: always
         depends_on:
             - wordpress
+        restart: always
+        environment:
+            - DOMAIN=${DOMAIN}
+            - SSLKEY=${SSLKEY}
+            - SSLCERT=${SSLCERT}
     wordpress:
         container_name: wordpress
         build: ./requirements/wordpress
@@ -24,11 +28,17 @@ services:
             - ~/data/web:/var/www/wp
         networks:
             - inception
-        # env_file:
-        #     - .env
         depends_on:
             - mariadb
         restart: always
+        environment:
+            - USER=${USER}
+            - DBHOST=${DBHOST}
+            - DOMAIN=${DOMAIN}
+            - DATABASE=${DATABASE}
+            - PASSWORD=${PASSWORD}
+            - WP_ADMIN=${WP_ADMIN}
+            - WP_ADMIN_PASSWD=${WP_ADMIN_PASSWD}
     mariadb:
         container_name: mariadb
         build: ./requirements/mariadb
@@ -36,6 +46,9 @@ services:
             - ~/data/db:/var/lib/mysql
         networks:
             - inception
-        # env_file:
-        #     - .env
         restart: always
+        environment:
+            - USER=${USER}
+            - DATABASE=${DATABASE}
+            - PASSWORD=${PASSWORD}
+            - ROOT_PASSWORD=${ROOT_PASSWORD}
