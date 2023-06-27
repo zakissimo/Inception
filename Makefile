@@ -1,8 +1,21 @@
+ENV_SRC = $(HOME)/.env
+ENV_DEST = $(PWD)/srcs/.env
+
 all: up
 
-build:
-	@mkdir -p /home/$(USER)/data/db
-	@mkdir -p /home/$(USER)/data/web
+set_env:
+	@if [ ! -f $(ENV_DEST) ] && [ ! -f $(ENV_SRC) ]; then \
+		echo "Env file not found. Exiting..." >&2; \
+		exit 1; \
+	elif [ ! -f $(ENV_DEST) ]; then \
+		cp -v $(ENV_SRC) $(ENV_DEST); \
+	fi
+
+mk_data:
+	@mkdir -p $(HOME)/data/db
+	@mkdir -p $(HOME)/data/web
+
+build: set_env mk_data
 	@docker compose -f ./srcs/docker-compose.yml build --no-cache
 
 up: build
@@ -18,4 +31,4 @@ clean: down
 	docker rmi -f $(shell docker images -a -q)
 	sudo rm -rvf /home/$(USER)/data
 
-.PHONY: all up clean build
+.PHONY: all up clean build set_env mk_data stop down
