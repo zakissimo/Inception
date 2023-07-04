@@ -22,13 +22,13 @@ up: build
 	docker compose -f ./srcs/docker-compose.yml up -d
 
 down:
-	@docker compose -f ./srcs/docker-compose.yml down
+	@docker compose -f ./srcs/docker-compose.yml down --remove-orphans
 
 stop:
 	docker compose -f ./srcs/docker-compose.yml stop
 
 clean: down
-	docker rmi -f $(shell docker images -a -q)
+	@docker system prune -af
 	sudo rm -rvf /home/$(USER)/data
 
 .PHONY: all up clean build set_env mk_data stop down
