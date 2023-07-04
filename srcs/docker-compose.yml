@@ -1,15 +1,32 @@
 version: '3'
 
+volumes:
+    web:
+        name: web
+        driver: local
+        driver_opts:
+            type: none
+            o: bind
+            device: ${HOME}/data/web
+    db:
+        name: db
+        driver: local
+        driver_opts:
+            type: none
+            o: bind
+            device: ${HOME}/data/db
+
 networks:
     inception:
         name: inception
 
 services:
     nginx:
+        image: nginx
         container_name: nginx
         build: ./requirements/nginx
         volumes:
-            - ~/data/web:/var/www/wp
+            - web:/var/www/wp
         networks:
             - inception
         ports:
@@ -22,10 +39,11 @@ services:
             - SSLKEY=${SSLKEY}
             - SSLCERT=${SSLCERT}
     wordpress:
+        image: wordpress
         container_name: wordpress
         build: ./requirements/wordpress
         volumes:
-            - ~/data/web:/var/www/wp
+            - web:/var/www/wp
         networks:
             - inception
         depends_on:
@@ -40,10 +58,11 @@ services:
             - WP_ADMIN=${WP_ADMIN}
             - WP_ADMIN_PASSWD=${WP_ADMIN_PASSWD}
     mariadb:
+        image: mariadb
         container_name: mariadb
         build: ./requirements/mariadb
         volumes:
-            - ~/data/db:/var/lib/mysql
+            - db:/var/lib/mysql
         networks:
             - inception
         restart: always

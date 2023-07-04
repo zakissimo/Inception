@@ -28,7 +28,7 @@ stop:
 	docker compose -f ./srcs/docker-compose.yml stop
 
 clean: down
-	@docker system prune -af
-	sudo rm -rvf /home/$(USER)/data
+	@docker system prune -af --volumes
+	sudo rm -rvf $(HOME)/data
 
 .PHONY: all up clean build set_env mk_data stop down
